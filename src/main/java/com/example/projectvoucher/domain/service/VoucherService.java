@@ -26,7 +26,16 @@ public class VoucherService {
         return voucherRepository.save(voucherEntity).code();
     }
 
-    // 상품권 취소
+    // 상품권 사용 불가 처리
+    @Transactional
+    public void disable(String code) {
+        final VoucherEntity voucherEntity = voucherRepository.findByCode(code)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품권입니다."));
+
+        voucherEntity.disable();
+    }
+
+
 
     // 상품권 사용
 }

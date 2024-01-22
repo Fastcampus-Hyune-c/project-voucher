@@ -40,4 +40,30 @@ class VoucherServiceTest {
         assertThat(voucherEntity.validTo()).isEqualTo(validTo);
         assertThat(voucherEntity.amount()).isEqualTo(amount);
     }
+
+    @DisplayName("발행된 상품권은 사용 불가 처리 할 수 있다.")
+    @Test
+    public void test2() {
+        // given
+        final LocalDate validFrom = LocalDate.now();
+        final LocalDate validTo = LocalDate.now().plusDays(30);
+        final Long amount = 10000L;
+
+        final String code = voucherService.publish(validFrom, validTo, amount);
+
+        // when
+        voucherService.disable(code);
+        final VoucherEntity voucherEntity = voucherRepository.findByCode(code).get();
+
+        // then
+        assertThat(voucherEntity.code()).isEqualTo(code);
+        assertThat(voucherEntity.status()).isEqualTo(VoucherStatusType.DISABLE);
+        assertThat(voucherEntity.validFrom()).isEqualTo(validFrom);
+        assertThat(voucherEntity.validTo()).isEqualTo(validTo);
+        assertThat(voucherEntity.amount()).isEqualTo(amount);
+        assertThat(voucherEntity.updateAt()).isNotEqualTo(voucherEntity.createAt());
+
+        System.out.println("### voucherEntity.createAt() = " + voucherEntity.createAt());
+        System.out.println("### voucherEntity.updateAt() = " + voucherEntity.updateAt());
+    }
 }

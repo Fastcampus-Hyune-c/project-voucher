@@ -35,7 +35,12 @@ public class VoucherService {
         voucherEntity.disable();
     }
 
-
-
     // 상품권 사용
+    @Transactional
+    public void use(String code) {
+        final VoucherEntity voucherEntity = voucherRepository.findByCode(code)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품권입니다."));
+
+        voucherEntity.use();
+    }
 }

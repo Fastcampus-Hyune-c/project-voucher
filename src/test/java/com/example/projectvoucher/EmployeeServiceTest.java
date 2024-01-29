@@ -1,6 +1,6 @@
 package com.example.projectvoucher;
 
-import com.example.projectvoucher.app.controller.response.EmployeeResponse;
+import com.example.projectvoucher.app.controller.employee.response.EmployeeResponse;
 import com.example.projectvoucher.domain.employee.EmployeeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.example.projectvoucher.app.controller.response;
+package com.example.projectvoucher.app.controller.employee.response;
 
 import java.time.LocalDateTime;
 

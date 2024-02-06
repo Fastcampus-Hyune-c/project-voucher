@@ -9,9 +9,9 @@ import com.example.projectvoucher.app.controller.voucher.response.VoucherPublish
 import com.example.projectvoucher.app.controller.voucher.response.VoucherPublishV2Response;
 import com.example.projectvoucher.app.controller.voucher.response.VoucherUseV2Response;
 import com.example.projectvoucher.domain.service.VoucherService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;

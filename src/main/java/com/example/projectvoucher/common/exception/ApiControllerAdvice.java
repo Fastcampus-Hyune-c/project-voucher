@@ -15,22 +15,22 @@ public class ApiControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
-    public String handleIllegalArgumentException(final IllegalArgumentException e) {
+    public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
         log.info(Arrays.toString(e.getStackTrace()));
-        return e.getMessage();
+        return new ErrorResponse(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalStateException.class)
-    public String handleIllegalStateException(final IllegalStateException e) {
+    public ErrorResponse handleIllegalStateException(final IllegalStateException e) {
         log.info(Arrays.toString(e.getStackTrace()));
-        return e.getMessage();
+        return new ErrorResponse(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public String handleException(final Exception e) {
+    public ErrorResponse handleException(final Exception e) {
         log.error(Arrays.toString(e.getStackTrace()));
-        return e.getMessage();
+        return new ErrorResponse(e.getMessage());
     }
 }

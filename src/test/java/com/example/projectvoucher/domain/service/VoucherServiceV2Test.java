@@ -66,8 +66,10 @@ class VoucherServiceV2Test {
 
         final String code = voucherService.publishV2(requestContext, validFrom, validTo, amount);
 
+        final RequestContext disableRequestContext = new RequestContext(RequesterType.PARTNER, UUID.randomUUID().toString());
+
         // when
-        voucherService.disable(code);
+        voucherService.disableV2(disableRequestContext, code);
         final VoucherEntity voucherEntity = voucherRepository.findByCode(code).get();
 
         // then
@@ -80,6 +82,14 @@ class VoucherServiceV2Test {
 
         System.out.println("### voucherEntity.createAt() = " + voucherEntity.createAt());
         System.out.println("### voucherEntity.updateAt() = " + voucherEntity.updateAt());
+
+        // history
+        final VoucherHistoryEntity voucherHistoryEntity = voucherEntity.histories().get(voucherEntity.histories().size() - 1);
+        assertThat(voucherHistoryEntity.orderId()).isNotNull();
+        assertThat(voucherHistoryEntity.requesterType()).isEqualTo(disableRequestContext.requesterType());
+        assertThat(voucherHistoryEntity.requesterId()).isEqualTo(disableRequestContext.requesterId());
+        assertThat(voucherHistoryEntity.status()).isEqualTo(VoucherStatusType.DISABLE);
+        assertThat(voucherHistoryEntity.description()).isEqualTo("테스트 사용 불가");
     }
 
     @DisplayName("발행된 상품권은 사용할 수 있다.")
@@ -93,8 +103,10 @@ class VoucherServiceV2Test {
 
         final String code = voucherService.publishV2(requestContext, validFrom, validTo, amount);
 
+        final RequestContext useRequestContext = new RequestContext(RequesterType.PARTNER, UUID.randomUUID().toString());
+
         // when
-        voucherService.use(code);
+        voucherService.useV2(useRequestContext, code);
         final VoucherEntity voucherEntity = voucherRepository.findByCode(code).get();
 
         // then
@@ -107,5 +119,13 @@ class VoucherServiceV2Test {
 
         System.out.println("### voucherEntity.createAt() = " + voucherEntity.createAt());
         System.out.println("### voucherEntity.updateAt() = " + voucherEntity.updateAt());
+
+        // history
+        final VoucherHistoryEntity voucherHistoryEntity = voucherEntity.histories().get(voucherEntity.histories().size() - 1);
+        assertThat(voucherHistoryEntity.orderId()).isNotNull();
+        assertThat(voucherHistoryEntity.requesterType()).isEqualTo(useRequestContext.requesterType());
+        assertThat(voucherHistoryEntity.requesterId()).isEqualTo(useRequestContext.requesterId());
+        assertThat(voucherHistoryEntity.status()).isEqualTo(VoucherStatusType.USE);
+        assertThat(voucherHistoryEntity.description()).isEqualTo("테스트 사용");
     }
 }

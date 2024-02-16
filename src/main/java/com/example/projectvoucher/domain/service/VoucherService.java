@@ -35,7 +35,7 @@ public class VoucherService {
         final VoucherEntity voucherEntity = voucherRepository.findByCode(code)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품권입니다."));
 
-        voucherEntity.disable();
+        voucherEntity.disable(null);
     }
 
     // 상품권 사용 v1
@@ -44,7 +44,7 @@ public class VoucherService {
         final VoucherEntity voucherEntity = voucherRepository.findByCode(code)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품권입니다."));
 
-        voucherEntity.use();
+        voucherEntity.use(null);
     }
 
     // 상품권 발행 v2
@@ -62,18 +62,24 @@ public class VoucherService {
     // 상품권 사용 불가 처리 v2
     @Transactional
     public void disableV2(final RequestContext requestContext, final String code) {
+        final String orderId = UUID.randomUUID().toString().toUpperCase().replaceAll("-", "");
+
         final VoucherEntity voucherEntity = voucherRepository.findByCode(code)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품권입니다."));
+        final VoucherHistoryEntity voucherHistoryEntity = new VoucherHistoryEntity(orderId, requestContext.requesterType(), requestContext.requesterId(), VoucherStatusType.DISABLE, "테스트 사용 불가");
 
-        voucherEntity.disable();
+        voucherEntity.disable(voucherHistoryEntity);
     }
 
     // 상품권 사용 v2
     @Transactional
     public void useV2(final RequestContext requestContext, final String code) {
+        final String orderId = UUID.randomUUID().toString().toUpperCase().replaceAll("-", "");
+
         final VoucherEntity voucherEntity = voucherRepository.findByCode(code)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품권입니다."));
+        final VoucherHistoryEntity voucherHistoryEntity = new VoucherHistoryEntity(orderId, requestContext.requesterType(), requestContext.requesterId(), VoucherStatusType.USE, "테스트 사용");
 
-        voucherEntity.use();
+        voucherEntity.use(voucherHistoryEntity);
     }
 }

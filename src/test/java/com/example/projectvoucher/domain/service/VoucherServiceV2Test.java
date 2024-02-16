@@ -5,6 +5,7 @@ import com.example.projectvoucher.common.type.RequesterType;
 import com.example.projectvoucher.common.type.VoucherAmountType;
 import com.example.projectvoucher.common.type.VoucherStatusType;
 import com.example.projectvoucher.storage.voucher.VoucherEntity;
+import com.example.projectvoucher.storage.voucher.VoucherHistoryEntity;
 import com.example.projectvoucher.storage.voucher.VoucherRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,14 @@ class VoucherServiceV2Test {
         assertThat(voucherEntity.validFrom()).isEqualTo(validFrom);
         assertThat(voucherEntity.validTo()).isEqualTo(validTo);
         assertThat(voucherEntity.amount()).isEqualTo(amount);
+
+        // history
+        final VoucherHistoryEntity voucherHistoryEntity = voucherEntity.histories().get(0);
+        assertThat(voucherHistoryEntity.orderId()).isNotNull();
+        assertThat(voucherHistoryEntity.requesterType()).isEqualTo(requestContext.requesterType());
+        assertThat(voucherHistoryEntity.requesterId()).isEqualTo(requestContext.requesterId());
+        assertThat(voucherHistoryEntity.status()).isEqualTo(VoucherStatusType.PUBLISH);
+        assertThat(voucherHistoryEntity.description()).isEqualTo("테스트 발행");
     }
 
     @DisplayName("발행된 상품권은 사용 불가 처리 할 수 있다.")

@@ -3,9 +3,7 @@ package com.example.projectvoucher.domain.service;
 import com.example.projectvoucher.common.dto.RequestContext;
 import com.example.projectvoucher.common.type.VoucherAmountType;
 import com.example.projectvoucher.common.type.VoucherStatusType;
-import com.example.projectvoucher.storage.voucher.VoucherEntity;
-import com.example.projectvoucher.storage.voucher.VoucherHistoryEntity;
-import com.example.projectvoucher.storage.voucher.VoucherRepository;
+import com.example.projectvoucher.storage.voucher.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +13,11 @@ import java.util.UUID;
 @Service
 public class VoucherService {
     private final VoucherRepository voucherRepository;
+    private final ContractRepository contractRepository;
 
-    public VoucherService(VoucherRepository voucherRepository) {
+    public VoucherService(VoucherRepository voucherRepository, ContractRepository contractRepository) {
         this.voucherRepository = voucherRepository;
+        this.contractRepository = contractRepository;
     }
 
     // 상품권 발행 v1
@@ -81,5 +81,18 @@ public class VoucherService {
         final VoucherHistoryEntity voucherHistoryEntity = new VoucherHistoryEntity(orderId, requestContext.requesterType(), requestContext.requesterId(), VoucherStatusType.USE, "테스트 사용");
 
         voucherEntity.use(voucherHistoryEntity);
+    }
+
+    // 상품권 발행 v3
+    @Transactional
+    public String publishV3(final RequestContext requestContext, final String contractCode, final VoucherAmountType amount) {
+        final String code = UUID.randomUUID().toString().toUpperCase().replaceAll("-", "");
+        final String orderId = UUID.randomUUID().toString().toUpperCase().replaceAll("-", "");
+
+        final ContractEntity contractEntity = contractRepository.findByCode(contractCode).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계약입니다."));
+        final VoucherHistoryEntity voucherHistoryEntity = new VoucherHistoryEntity(orderId, requestContext.requesterType(), requestContext.requesterId(), VoucherStatusType.PUBLISH, "테스트 발행");
+        final VoucherEntity voucherEntity = new VoucherEntity(code, VoucherStatusType.PUBLISH, LocalDate.now(), LocalDate.now().plusDays(contractEntity.voucherValidPeriodDayCount()), amount, voucherHistoryEntity);
+
+        return voucherRepository.save(voucherEntity).code();
     }
 }

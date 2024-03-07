@@ -19,5 +19,6 @@ public class LocalDataInit {
     public void init() {
         // 계약 데이터 초기화
         contractRepository.save(new ContractEntity("CT0001", LocalDate.now().minusDays(7), LocalDate.now().plusDays(7), 366 * 5));
+        contractRepository.save(new ContractEntity("CT0010", LocalDate.now().minusDays(30), LocalDate.now().minusDays(7), 366 * 5));
     }
 }

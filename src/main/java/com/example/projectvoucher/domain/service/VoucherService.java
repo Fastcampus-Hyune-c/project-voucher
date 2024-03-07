@@ -100,4 +100,22 @@ public class VoucherService {
 
         return voucherRepository.save(voucherEntity).code();
     }
+
+    // 상품권 사용 불가 처리 v3
+    @Transactional
+    public void disableV3(final RequestContext requestContext, final String code) {
+        final String orderId = UUID.randomUUID().toString().toUpperCase().replaceAll("-", "");
+
+        final VoucherEntity voucherEntity = voucherRepository.findByCode(code)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품권입니다."));
+
+        if (voucherEntity.publishHistory().requesterType() != requestContext.requesterType()
+                || !voucherEntity.publishHistory().requesterId().equals(requestContext.requesterId())) {
+            throw new IllegalArgumentException("사용 불가 처리 권한이 없는 상품권 입니다.");
+        }
+
+        final VoucherHistoryEntity voucherHistoryEntity = new VoucherHistoryEntity(orderId, requestContext.requesterType(), requestContext.requesterId(), VoucherStatusType.DISABLE, "테스트 사용 불가");
+
+        voucherEntity.disable(voucherHistoryEntity);
+    }
 }

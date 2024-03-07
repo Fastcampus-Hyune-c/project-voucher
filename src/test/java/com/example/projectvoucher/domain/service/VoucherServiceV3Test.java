@@ -75,4 +75,28 @@ class VoucherServiceV3Test {
         assertThat(voucherHistoryEntity.status()).isEqualTo(VoucherStatusType.PUBLISH);
         assertThat(voucherHistoryEntity.description()).isEqualTo("테스트 발행");
     }
+
+    @DisplayName("상품권은 발행 요청자만 사용 불가 처리를 할 수 있다.")
+    @Test
+    public void test2() {
+        // given
+        final RequestContext requestContext = new RequestContext(RequesterType.PARTNER, UUID.randomUUID().toString());
+        final VoucherAmountType amount = VoucherAmountType.KRW_30000;
+
+        final String contractCode = "CT0001";
+        final String code = voucherService.publishV3(requestContext, contractCode, amount);
+
+        final RequestContext otherRequestContext = new RequestContext(RequesterType.USER, UUID.randomUUID().toString());
+
+        // when
+        assertThatThrownBy(() -> voucherService.disableV3(otherRequestContext, code))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("사용 불가 처리 권한이 없는 상품권 입니다.");
+
+        // then
+        final VoucherEntity voucherEntity = voucherRepository.findByCode(code).get();
+
+        assertThat(voucherEntity.code()).isEqualTo(code);
+        assertThat(voucherEntity.status()).isEqualTo(VoucherStatusType.PUBLISH);
+    }
 }
